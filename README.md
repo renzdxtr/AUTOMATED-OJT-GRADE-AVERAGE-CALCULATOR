@@ -84,10 +84,6 @@ renzdxtr-automated-ojt-grade-average-calculator/
 
 ---
 
-Here's the updated section in the markdown, including the check and highlight logic for missing grades:
-
----
-
 ## 🎮 Usage
 
 1. **Fill in your OJT scores in the Grades sheet**.  
@@ -173,11 +169,9 @@ function updateSummaryAverages() {
 }
 ```
 
----
-
 This added check and highlight logic ensures that no incomplete data gets processed, and users are immediately notified with a visual cue and a toast notification.
 
-
+---
 
 ## 🛠️ Configuration
 
