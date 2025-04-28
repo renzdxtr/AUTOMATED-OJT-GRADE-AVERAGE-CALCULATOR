@@ -101,6 +101,9 @@ function updateSummaryAverages(
 
   summary.getRange(2, 2, output.length, metrics.length).setValues(output);
 
+  // Format to 2 decimal points only
+  summary.getRange(2, 2, output.length, metrics.length).setNumberFormat("0.00");
+
   logToastError("summary_updated", {
     sheetName: summarySheetName,
     count: output.length,
