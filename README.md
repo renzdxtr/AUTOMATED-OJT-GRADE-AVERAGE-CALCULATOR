@@ -84,9 +84,13 @@ renzdxtr-automated-ojt-grade-average-calculator/
 
 ---
 
+Here's the updated section in the markdown, including the check and highlight logic for missing grades:
+
+---
+
 ## 🎮 Usage
 
-1. Fill in your OJT scores in the **Grades** sheet.  
+1. **Fill in your OJT scores in the Grades sheet**.  
    > _The example below is just a sample layout – you can customize the category labels and criteria._  
    - **Two-row header** for flexible categorization:  
      1. **Row 1 (Category Labels)**  
@@ -104,9 +108,76 @@ renzdxtr-automated-ojt-grade-average-calculator/
      - **B–F** → Scores (0–10) for **A1–A5** (Job Performance)  
      - **G–N** → Scores (0–10) for **B1–B8** (Attitude)  
    - **Tip:** You can enter multiple rows per student; the script will group by Name, compute each criterion’s average, and populate your **Summary** sheet automatically.  
-2. In the menu bar, choose **GENERATE SUMMARY → Calculate Students' Average Per Criteria**.  
-3. Averages will appear in the **Summary** sheet in columns B–O, aligned by student name.  
-4. Check toast notifications for success or any errors.
+   
+2. **In the menu bar**, choose **GENERATE SUMMARY → Calculate Students' Average Per Criteria**.  
+3. **Averages** will appear in the **Summary** sheet in columns B–O, aligned by student name.  
+4. **Check toast notifications** for success or any errors.
+
+---
+
+### Checking and Highlighting Missing Grades
+
+The script will automatically check for missing grades in the **Grades** sheet before proceeding with calculations. If any student has missing grades (blank values), those cells will be highlighted in **yellow** and a toast notification will alert you to the issue. The script will not proceed with the summary update until all grades are provided.
+
+Here’s how it works:
+
+- **Missing Grade Check**:  
+   The script will loop through the student names and their corresponding grade cells to check if any grade is missing.
+  
+- **Highlight Missing Grades**:  
+   Any missing grades will be highlighted in **yellow** to make it easy to spot incomplete entries.
+
+- **Stop Further Processing**:  
+   If missing grades are detected, the script will display a toast notification indicating the issue and halt further processing of averages until the grades are filled in.
+
+#### Example:
+
+```javascript
+function checkMissingGrades(gradesSheet) {
+  const gradesRange = gradesSheet.getRange(3, 2, gradesSheet.getLastRow() - 2, gradesSheet.getLastColumn() - 1);
+  const grades = gradesRange.getValues();
+  
+  let missingGradesFound = false;
+  
+  grades.forEach((row, rowIndex) => {
+    row.forEach((cell, colIndex) => {
+      if (cell === "" || cell === null) {
+        gradesRange.getCell(rowIndex + 1, colIndex + 1).setBackground("yellow");
+        missingGradesFound = true;
+      }
+    });
+  });
+  
+  if (missingGradesFound) {
+    SpreadsheetApp.getActiveSpreadsheet().toast("Missing grades detected! Highlighted in yellow.");
+  }
+  
+  return missingGradesFound;
+}
+
+function updateSummaryAverages() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const gradesSheet = ss.getSheetByName("Grades");
+  const summarySheet = ss.getSheetByName("Summary");
+  
+  if (!gradesSheet || !summarySheet) {
+    logToastError("Missing sheets", {sheetName: "Grades or Summary"});
+    return;
+  }
+  
+  if (checkMissingGrades(gradesSheet)) {
+    return;  // Stop further execution if missing grades are found
+  }
+
+  // Continue with the summary calculation logic...
+}
+```
+
+---
+
+This added check and highlight logic ensures that no incomplete data gets processed, and users are immediately notified with a visual cue and a toast notification.
+
+
 
 ## 🛠️ Configuration
 
